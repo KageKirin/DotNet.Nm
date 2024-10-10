@@ -16,7 +16,7 @@
     <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
     <EmbedUntrackedSources>true</EmbedUntrackedSources>
     <IncludeSymbols>true</IncludeSymbols>
-    <IncludeSource>true</IncludeSource>
+    <IncludeSource>false</IncludeSource>
     <Deterministic>true</Deterministic>
     <SymbolPackageFormat>symbols.nupkg</SymbolPackageFormat>
     <PublishRepositoryUrl>true</PublishRepositoryUrl>
@@ -38,7 +38,7 @@
   </PropertyGroup>
 
   <PropertyGroup Label="common build metadata">
-    <PackageProjectUrl>https://github.dena.jp/avatar/Unity.Mathematics.NuGet</PackageProjectUrl>
+    <PackageProjectUrl>https://github.com/KageKirin/DotNet.Nm</PackageProjectUrl>
     <Copyright>Copyright © $(Owners) $([System.DateTime]::Now.Year)</Copyright>
     <Authors>Chris Helmich</Authors>
     <Owners>Chris Helmich</Owners>
