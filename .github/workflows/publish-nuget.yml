@@ -1,0 +1,43 @@
+name: publish (nuget)
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  publish-nuget:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: write # allow GITHUB_TOKEN to publish packages
+    strategy:
+      matrix:
+        source: [github]
+        include:
+          - source: github
+            registry: https://nuget.github.com/${{ github.repository_owner }}/index.json
+            username: ${{ github.repository_owner }}
+            token: GH_PUBLISH_TOKEN
+    steps:
+    - uses: kagekirin/gha-py-toolbox/macros/util/setup-system@main
+      with:
+        token: ${{secrets.GITHUB_TOKEN}}
+        systems: |
+          python
+          dotnet
+
+    - id: build-pack-publish
+      uses: kagekirin/gha-py-toolbox/jobs/dotnet/checkout-build-pack-publish@main
+      with:
+        registry: ${{ matrix.registry }}
+        nuget-token: ${{ secrets[matrix.token] }}
+        lfs: true
+        token: ${{secrets.GITHUB_TOKEN}}
+        persist-credentials: true
+        configurations: Release
+        frameworks: |-
+          net8.0
+        filter-packages: |-
+          ^(\.artifacts).*$
+      env:
+        GH_NUGET_USER: ${{github.actor}}
+        GH_NUGET_TOKEN: ${{secrets.GH_PUBLISH_TOKEN}}
