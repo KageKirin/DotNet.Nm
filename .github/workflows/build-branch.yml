@@ -38,3 +38,27 @@ jobs:
       env:
         GH_NUGET_USER: ${{github.actor}}
         GH_NUGET_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+  test-tag-release:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: read
+    needs:
+    - build
+    steps:
+    - uses: kagekirin/gha-py-toolbox/macros/util/setup-system@main
+      with:
+        token: ${{secrets.GITHUB_TOKEN}}
+        systems: |
+          python
+
+    - uses: kagekirin/gha-py-toolbox/jobs/git/checkout-bump-tag-release@main
+      with:
+        token: ${{secrets.GH_CHAIN_TOKEN}}
+        persist-credentials: true
+        commit-message: 'build: update to '
+        tag-message: 'tag:'
+        name: 'GitHub CI on behalf of ${{ github.actor }}'
+        bump_patch: true
+        dry-run: true
