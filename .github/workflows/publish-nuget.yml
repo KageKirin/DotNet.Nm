@@ -1,6 +1,7 @@
 name: publish (nuget)
 
 on:
+  workflow_dispatch:
   push:
     tags:
       - '*'
