@@ -10,6 +10,12 @@
     <ToolCommandName>dotnet-nm</ToolCommandName>
   </PropertyGroup>
 
+  <PropertyGroup Label="package info">
+    <Title>DotNet.Nm</Title>
+    <Description>DotNet.Nm is a command line tool akin to `nm` for .NET assemblies</Description>
+    <PackageTags>nm;assembly;reflection;symbols</PackageTags>
+  </PropertyGroup>
+
   <ItemGroup Label="packaged files">
     <None Include="$(MSBuildThisFileDirectory)..\Icon.png" Pack="true" PackagePath="\"/>
   </ItemGroup>
