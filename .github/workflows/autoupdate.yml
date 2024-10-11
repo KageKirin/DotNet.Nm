@@ -1,0 +1,25 @@
+name: autoupdate
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+    - '*'
+
+jobs:
+  autoupdate:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+    steps:
+    - uses: kagekirin/gha-py-toolbox/macros/util/setup-system@main
+      with:
+        token: ${{secrets.GITHUB_TOKEN}}
+        systems: |
+          python
+
+    - id: autoupdate-pullrequests
+      uses: kagekirin/gha-py-toolbox/jobs/gh/autoupdate-pullrequests@main
+      with:
+        token: ${{secrets.GH_CHAIN_TOKEN}}
+        count: 1
