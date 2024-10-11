@@ -64,7 +64,7 @@
   </ItemGroup>
 
   <PropertyGroup Label="MinVer configuration">
-    <MinVerTagPrefix></MinVerTagPrefix>
+    <MinVerTagPrefix>v</MinVerTagPrefix>
   </PropertyGroup>
 
   <ItemGroup Label="source link settings">
