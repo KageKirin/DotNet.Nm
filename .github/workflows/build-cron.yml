@@ -1,0 +1,69 @@
+name: build-cron
+
+on:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  build:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    strategy:
+      matrix:
+        configurations: [Debug, Release]
+        frameworks: [net8.0]
+        projects: [DotNet.Nm.sln]
+
+    steps:
+    - uses: kagekirin/gha-py-toolbox/macros/util/setup-system@main
+      with:
+        token: ${{secrets.GITHUB_TOKEN}}
+        systems: |
+          python
+          dotnet
+
+    - uses: kagekirin/gha-py-toolbox/jobs/dotnet/checkout-build@main
+      with:
+        lfs: true
+        token: ${{secrets.GITHUB_TOKEN}}
+        persist-credentials: true
+        configurations: ${{ matrix.configurations }}
+        frameworks: ${{ matrix.frameworks }}
+        projects: ${{ matrix.projects }}
+        nuget-cache: ${{github.workspace}}/.packages
+        build-cache: ${{github.workspace}}/.artifacts
+      env:
+        GH_NUGET_USER: ${{github.actor}}
+        GH_NUGET_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+
+  pack-nuget:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    needs: build
+    steps:
+    - uses: kagekirin/gha-py-toolbox/macros/util/setup-system@main
+      with:
+        token: ${{secrets.GITHUB_TOKEN}}
+        systems: |
+          python
+          dotnet
+
+    - uses: kagekirin/gha-py-toolbox/jobs/dotnet/checkout-build-pack@main
+      with:
+        lfs: true
+        token: ${{secrets.GITHUB_TOKEN}}
+        persist-credentials: true
+        configurations: Release
+        frameworks: |-
+          net8.0
+        filter-packages: |-
+          ^(\.artifacts).*$
+      env:
+        GH_NUGET_USER: ${{github.actor}}
+        GH_NUGET_TOKEN: ${{secrets.GITHUB_TOKEN}}

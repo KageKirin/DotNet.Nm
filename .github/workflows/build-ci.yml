@@ -1,0 +1,98 @@
+name: build-ci
+
+on:
+  workflow_dispatch:
+  pull_request:
+    branches:
+      - 'main'
+    types: [closed]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: read
+    strategy:
+      matrix:
+        configurations: [Release]
+        frameworks: [net8.0]
+        projects: [DotNet.Nm.sln]
+
+    steps:
+    - uses: kagekirin/gha-py-toolbox/macros/util/setup-system@main
+      with:
+        token: ${{secrets.GITHUB_TOKEN}}
+        systems: |
+          python
+          dotnet
+
+    - uses: kagekirin/gha-py-toolbox/jobs/dotnet/checkout-build@main
+      with:
+        lfs: true
+        token: ${{secrets.GITHUB_TOKEN}}
+        persist-credentials: true
+        configurations: ${{ matrix.configurations }}
+        frameworks: ${{ matrix.frameworks }}
+        projects: ${{ matrix.projects }}
+        nuget-cache: ${{github.workspace}}/.packages
+        build-cache: ${{github.workspace}}/.artifacts
+      env:
+        GH_NUGET_USER: ${{github.actor}}
+        GH_NUGET_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+
+  pack-nuget:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+    needs: build
+    steps:
+    - uses: kagekirin/gha-py-toolbox/macros/util/setup-system@main
+      with:
+        token: ${{secrets.GITHUB_TOKEN}}
+        systems: |
+          python
+          dotnet
+
+
+    - uses: kagekirin/gha-py-toolbox/jobs/dotnet/checkout-build-pack@main
+      with:
+        lfs: true
+        token: ${{secrets.GITHUB_TOKEN}}
+        persist-credentials: true
+        configurations: Release
+        frameworks: |-
+          net8.0
+        filter-packages: |-
+          ^(\.artifacts).*$
+      env:
+        GH_NUGET_USER: ${{github.actor}}
+        GH_NUGET_TOKEN: ${{secrets.GITHUB_TOKEN}}
+
+
+  tag-release:
+    if: github.event.pull_request.merged == true
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+      packages: read
+    needs:
+    - build
+    - pack-nuget
+    steps:
+    - uses: kagekirin/gha-py-toolbox/macros/util/setup-system@main
+      with:
+        token: ${{secrets.GITHUB_TOKEN}}
+        systems: |
+          python
+
+    - uses: kagekirin/gha-py-toolbox/jobs/git/checkout-bump-tag-release@main
+      with:
+        token: ${{secrets.GH_CHAIN_TOKEN}}
+        persist-credentials: true
+        commit-message: 'build: update to '
+        tag-message: 'tag:'
+        name: 'GitHub CI on behalf of ${{ github.actor }}'
+        bump_patch: true
+        dry-run: false

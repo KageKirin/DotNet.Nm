@@ -1,0 +1,34 @@
+name: release-published
+
+on:
+  registry_package:
+    types: [published]
+
+jobs:
+  release-published:
+    runs-on: ubuntu-latest
+    permissions:
+      packages: read
+      contents: write
+    steps:
+    - uses: kagekirin/gha-py-toolbox/macros/util/setup-system@main
+      with:
+        token: ${{secrets.GITHUB_TOKEN}}
+        systems: |
+          python
+
+    - name: Show infos about GitHub
+      uses: kagekirin/gha-py-toolbox/actions/util/display-json-object@main
+      with:
+        object: ${{ toJSON(github) }}
+    - name: Show infos about event
+      uses: kagekirin/gha-py-toolbox/actions/util/display-json-object@main
+      with:
+        object: ${{ toJSON(github.event) }}
+
+    - id: upload-published-packages
+      name: Upload published package files
+      uses: kagekirin/gha-py-toolbox/jobs/gh/release-published-packages@main
+      with:
+        token: ${{secrets.GH_CHAIN_TOKEN}}
+        registry_package_json: ${{ toJSON(github.event.registry_package) }}
