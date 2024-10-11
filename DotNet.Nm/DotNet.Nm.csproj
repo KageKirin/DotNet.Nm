@@ -1,7 +1,7 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup Label="build settings">
-    <PackageId>DotNet.Nm</PackageId>
+    <PackageId>KageKirin.DotNet.Nm</PackageId>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
     <ImplicitUsings>enable</ImplicitUsings>
@@ -12,7 +12,7 @@
   </PropertyGroup>
 
   <PropertyGroup Label="package info">
-    <Title>DotNet.Nm</Title>
+    <Title>KageKirin.DotNet.Nm</Title>
     <Description>DotNet.Nm is a command line tool akin to `nm` for .NET assemblies</Description>
     <PackageTags>nm;assembly;reflection;symbols</PackageTags>
     <PackageIcon>Icon.png</PackageIcon>
