@@ -1,6 +1,6 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
+  <PropertyGroup Label="build settings">
     <PackageId>DotNet.Nm</PackageId>
     <OutputType>Exe</OutputType>
     <TargetFramework>net8.0</TargetFramework>
